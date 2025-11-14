@@ -15,16 +15,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @AllArgsConstructor
 @Entity
 @Table(name = "todos")
-public class Todo {
+public class Todo { // entity class: encapsulation + relation to User (composition)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String title;
-    private String description;
+    private Long id; // encapsulation: primary key
+    private String title; // encapsulation: data hidden
+    private String description; // encapsulation: data hidden
+    private boolean completed;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @JsonIgnore
-    private User user;
+    private User user; // composition: many-to-one relationship to User
 }

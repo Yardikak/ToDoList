@@ -15,19 +15,42 @@ public class TodoService {
 
     private final TodoRepository todoRepository;
 
-    // Create
     public Todo createTodo(User user, TodoRequest request) {
-        Todo todo = Todo.builder()
+        Todo newTodo = Todo.builder()
                 .title(request.title())
                 .description(request.description())
-                .user(user) // Set pemilik todo
+                .user(user)
                 .build();
-        
-        return todoRepository.save(todo);
+        // ABSTRACTION: Memanggil method save tanpa peduli query SQL-nya
+        return todoRepository.save(newTodo);
     }
 
-    // Read (Get My Todos)
     public List<Todo> getUserTodos(User user) {
+        // ABSTRACTION: Memanggil method findByUserId tanpa menulis SQL.
         return todoRepository.findByUserId(user.getId());
+    }
+
+    public Todo toggleTodoStatus(Long todoId, User user) {
+        Todo existingTodo = todoRepository.findById(todoId)
+                .orElseThrow(() -> new RuntimeException("Todo not found"));
+
+        // ENCAPSULATION: Memastikan yang mengubah status hanyalah pemilik Todo.
+        if (!existingTodo.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Access denied");
+        }
+        existingTodo.setCompleted(!existingTodo.isCompleted());
+        return todoRepository.save(existingTodo);
+    }
+
+    public void deleteTodo(Long todoId, User user) {
+        Todo todoToDelete = todoRepository.findById(todoId)
+                .orElseThrow(() -> new RuntimeException("Todo not found"));
+
+        // ENCAPSULATION: Memastikan hanya pemilik yang bisa menghapus.
+        if (!todoToDelete.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Access denied");
+        }
+
+        todoRepository.delete(todoToDelete);
     }
 }

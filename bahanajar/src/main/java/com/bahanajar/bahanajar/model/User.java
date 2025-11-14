@@ -21,19 +21,20 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
-public class User implements UserDetails {
+public class User implements UserDetails { // class + implements UserDetails (polymorphism)
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id; // encapsulation: private field (primary key)
 
     @Column(unique = true, nullable = false)
-    private String email;
+    private String email; // encapsulation: unique identifier used as username
 
     @Column(nullable = false)
-    private String password;
+    private String password; // encapsulation: sensitive, store hashed
 
     private String name;
+    // encapsulation: user display name
 
     @Enumerated(EnumType.STRING)
     private Role role;

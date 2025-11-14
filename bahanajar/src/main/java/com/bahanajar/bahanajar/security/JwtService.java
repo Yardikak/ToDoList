@@ -15,10 +15,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-@Service // Menandakan class ini adalah Bean (Komponen) Spring
-public class JwtService {
+@Service
+public class JwtService { // class: service bean encapsulating JWT logic (single responsibility)
 
-    // Mengambil nilai rahasia dari application.properties (Enkapsulasi konfigurasi)
+    // Enkapsulasi
     @Value("${app.jwtSecret}")
     private String secretKey;
 
@@ -44,14 +44,14 @@ public class JwtService {
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts.builder()
                 .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername()) // Set Email sebagai subjek
+                .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration)) // Expired kapan?
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256) // Tanda tangan digital
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // 4. Validasi Token: Apakah token ini milik user tersebut & belum expired?
+    // 4. Validasi Token
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);

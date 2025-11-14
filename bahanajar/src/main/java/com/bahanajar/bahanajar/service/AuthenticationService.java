@@ -22,14 +22,14 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    // LOGIKA REGISTER
+    // REGISTER
     public AuthResponse register(RegisterRequest request) {
-        // 1. Buat object User baru (pake Builder Pattern biar rapi)
+        // 1. Buat object User baru
         var user = User.builder()
                 .name(request.name())
                 .email(request.email())
-                .password(passwordEncoder.encode(request.password())) // Hash password!
-                .role(Role.USER) // Default role user biasa
+                .password(passwordEncoder.encode(request.password()))
+                .role(Role.USER)
                 .build();
 
         // 2. Simpan ke Database
@@ -42,10 +42,9 @@ public class AuthenticationService {
         return new AuthResponse(jwtToken);
     }
 
-    // LOGIKA LOGIN
+    // LOGIN
     public AuthResponse login(LoginRequest request) {
         // 1. Autentikasi user (Cek username & password)
-        // Ini akan otomatis gagal (throw exception) jika password salah
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.email(),
@@ -53,7 +52,7 @@ public class AuthenticationService {
 
         // 2. Jika lolos (password benar), ambil data user dari DB
         var user = userRepository.findByEmail(request.email())
-                .orElseThrow(); // Throw error jika user entah kenapa tidak ketemu
+                .orElseThrow();
 
         // 3. Buat Token baru
         var jwtToken = jwtService.generateToken(user);

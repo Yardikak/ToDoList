@@ -15,21 +15,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-public class AuthenticationController { // <-- INI YANG TADI HILANG
-
-    private final AuthenticationService service; // <-- INI JUGA TADI HILANG
+public class AuthenticationController {
+    private final AuthenticationService service;
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(
-            @Valid @RequestBody RegisterRequest request // <-- @Valid sudah aman
-    ) {
+            @Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.ok(service.register(request));
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
-            @Valid @RequestBody LoginRequest request // <-- @Valid sudah aman
-    ) {
+            @Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(service.login(request));
     }
 }

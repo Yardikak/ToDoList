@@ -8,8 +8,8 @@ import io.swagger.v3.oas.annotations.info.Info;
 @SpringBootApplication
 @OpenAPIDefinition(
 	info = @Info(
-		title = "API To Do List", 
-		version = "1.0.0", 
+		title = "API To Do List",
+		version = "1.0.0",
 		description = "Dokumentasi API untuk Aplikasi To Do List Belajar Spring Boot"
 	)
 )
