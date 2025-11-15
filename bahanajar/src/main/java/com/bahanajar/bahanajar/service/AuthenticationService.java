@@ -38,8 +38,8 @@ public class AuthenticationService {
         // 3. Generate Token JWT
         String jwtToken = jwtService.generateToken(user);
 
-        // 4. Kembalikan token
-        return new AuthResponse(jwtToken);
+        // 4. Kembalikan token + role + name
+        return new AuthResponse(user.getName(), user.getRole().name(), jwtToken);
     }
 
     // REGISTER (Admin)
@@ -53,7 +53,7 @@ public class AuthenticationService {
 
         userRepository.save(user);
         String jwtToken = jwtService.generateToken(user);
-        return new AuthResponse(jwtToken);
+        return new AuthResponse(user.getName(), user.getRole().name(), jwtToken);
     }
 
     // LOGIN
@@ -71,7 +71,7 @@ public class AuthenticationService {
         // 3. Buat Token baru
         var jwtToken = jwtService.generateToken(user);
 
-        // 4. Kembalikan token
-        return new AuthResponse(jwtToken);
+        // 4. Kembalikan token + role + name
+        return new AuthResponse(user.getName(), user.getRole().name(), jwtToken);
     }
 }
