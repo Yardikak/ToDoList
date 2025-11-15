@@ -3,10 +3,11 @@ package com.bahanajar.bahanajar.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,28 +17,20 @@ import java.util.List;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
-public class User implements UserDetails { // class + implements UserDetails (polymorphism)
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // encapsulation: private field (primary key)
-
-    @Column(unique = true, nullable = false)
-    private String email; // encapsulation: unique identifier used as username
-
-    @Column(nullable = false)
-    private String password; // encapsulation: sensitive, store hashed
-
-    private String name;
-    // encapsulation: user display name
+@SuperBuilder
+public class User extends AbstractApplicationUser implements UserDetails { // class + implements UserDetails
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Override
+    public String getRoleName() {
+        return role != null ? role.name() : null;
+    }
 
     // --- SECURITY METHODS ---
 
@@ -50,13 +43,13 @@ public class User implements UserDetails { // class + implements UserDetails (po
     @Override
     @JsonIgnore
     public String getPassword() {
-        return password;
+        return super.getPassword();
     }
 
     @Override
     @JsonIgnore
     public String getUsername() {
-        return email;
+        return super.getEmail();
     }
 
     @Override

@@ -22,21 +22,21 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    // REGISTER
+    // REGISTER (Pengguna Default)
     public AuthResponse register(RegisterRequest request) {
         // 1. Buat object User baru
-        var user = User.builder()
-                .name(request.name())
+        User user = User.builder() // OOP: Builder Pattern
+                .role(Role.USER) // <-- Default Role
                 .email(request.email())
+                .name(request.name())
                 .password(passwordEncoder.encode(request.password()))
-                .role(Role.USER)
                 .build();
 
         // 2. Simpan ke Database
-        userRepository.save(user);
+        userRepository.save(user); // OOP: Abstraction
 
-        // 3. Generate Token JWT otomatis agar user langsung login setelah register
-        var jwtToken = jwtService.generateToken(user);
+        // 3. Generate Token JWT
+        String jwtToken = jwtService.generateToken(user);
 
         // 4. Kembalikan token
         return new AuthResponse(jwtToken);
@@ -44,13 +44,13 @@ public class AuthenticationService {
 
     // LOGIN
     public AuthResponse login(LoginRequest request) {
-        // 1. Autentikasi user (Cek username & password)
-        authenticationManager.authenticate(
+        // 1. Autentikasi user
+        authenticationManager.authenticate( // OOP: Abstraction
                 new UsernamePasswordAuthenticationToken(
                         request.email(),
                         request.password()));
 
-        // 2. Jika lolos (password benar), ambil data user dari DB
+        // 2. Ambil data user dari DB
         var user = userRepository.findByEmail(request.email())
                 .orElseThrow();
 
