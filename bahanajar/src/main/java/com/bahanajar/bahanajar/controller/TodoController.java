@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +22,7 @@ public class TodoController {
 
     // CREATE
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')") // ADMIN
     public ResponseEntity<Todo> create(
             @Parameter(hidden = true) @AuthenticationPrincipal User user,
             @Valid @RequestBody TodoRequest request // ENCAPSULATION
@@ -31,6 +33,7 @@ public class TodoController {
 
     // READ
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<List<Todo>> getAll(
             @Parameter(hidden = true) @AuthenticationPrincipal User user) {
         // ENCAPSULATION
@@ -39,6 +42,7 @@ public class TodoController {
 
     // UPDATE
     @PutMapping("/{id}/toggle")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Todo> toggleStatus(
             @PathVariable Long id,
             @Parameter(hidden = true) @AuthenticationPrincipal User user) {
@@ -49,6 +53,7 @@ public class TodoController {
 
     // DELETE
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteTodo(
             @PathVariable Long id,
             @Parameter(hidden = true) @AuthenticationPrincipal User user) {

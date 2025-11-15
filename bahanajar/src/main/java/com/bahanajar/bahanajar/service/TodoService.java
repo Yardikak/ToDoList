@@ -1,6 +1,7 @@
 package com.bahanajar.bahanajar.service;
 
 import com.bahanajar.bahanajar.dto.TodoRequest;
+import com.bahanajar.bahanajar.model.Role;
 import com.bahanajar.bahanajar.model.Todo;
 import com.bahanajar.bahanajar.model.User;
 import com.bahanajar.bahanajar.repository.TodoRepository;
@@ -26,6 +27,10 @@ public class TodoService {
     }
 
     public List<Todo> getUserTodos(User user) {
+        if (user.getRole() == Role.ADMIN) {
+            // ADMIN
+            return todoRepository.findAll();
+        }
         // ABSTRACTION: Memanggil method findByUserId tanpa menulis SQL.
         return todoRepository.findByUserId(user.getId());
     }
@@ -35,9 +40,10 @@ public class TodoService {
                 .orElseThrow(() -> new RuntimeException("Todo not found"));
 
         // ENCAPSULATION: Memastikan yang mengubah status hanyalah pemilik Todo.
-        if (!existingTodo.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("Access denied");
-        }
+        // if (!existingTodo.getUser().getId().equals(user.getId())) {
+        // throw new RuntimeException("Access denied");
+        // }
+
         existingTodo.setCompleted(!existingTodo.isCompleted());
         return todoRepository.save(existingTodo);
     }
@@ -47,9 +53,9 @@ public class TodoService {
                 .orElseThrow(() -> new RuntimeException("Todo not found"));
 
         // ENCAPSULATION: Memastikan hanya pemilik yang bisa menghapus.
-        if (!todoToDelete.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("Access denied");
-        }
+        // if (!todoToDelete.getUser().getId().equals(user.getId())) {
+        // throw new RuntimeException("Access denied");
+        // }
 
         todoRepository.delete(todoToDelete);
     }
