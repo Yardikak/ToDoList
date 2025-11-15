@@ -1,5 +1,7 @@
 package com.bahanajar.bahanajar.config;
 
+// 1. IMPORT HANDLER BARU ANDA
+import com.bahanajar.bahanajar.security.CustomAccessDeniedHandler;
 import com.bahanajar.bahanajar.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -16,38 +18,44 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthFilter;
-    private final AuthenticationProvider authenticationProvider;
+        private final JwtAuthenticationFilter jwtAuthFilter;
+        private final AuthenticationProvider authenticationProvider;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                // Matikan CSRF (karena kita pakai JWT / Stateless API, bukan Session browser)
-                .csrf(csrf -> csrf.disable())
+        // 2. INJEKSI HANDLER BARU ANDA (Akan otomatis diisi oleh
+        // @RequiredArgsConstructor)
+        private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
-                // Atur Izin Akses (Routing)
-                .authorizeHttpRequests(auth -> auth
-                        // Izinkan akses ke /api/auth/** (Login/Register) TANPA token
-                        .requestMatchers("/api/auth/**").permitAll()
-                        // --- IZIN SWAGGER UI (TAMBAHKAN INI) ---
-                        .requestMatchers(
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html")
-                        .permitAll()
-                        // Endpoint lain WAJIB authenticated
-                        .anyRequest().authenticated())
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+                http
+                                // Matikan CSRF
+                                .csrf(csrf -> csrf.disable())
 
-                // Atur Session jadi STATELESS (karena pakai JWT)
-                // Artinya server tidak nyimpan sesi user di memori (hemat RAM)
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                // Atur Izin Akses (Routing)
+                                .authorizeHttpRequests(auth -> auth
+                                                // Izinkan akses ke Auth dan Swagger TANPA token
+                                                .requestMatchers(
+                                                                "/api/auth/**",
+                                                                "/v3/api-docs/**",
+                                                                "/swagger-ui/**",
+                                                                "/swagger-ui.html")
+                                                .permitAll()
+                                                // Endpoint lain WAJIB authenticated
+                                                .anyRequest().authenticated())
 
-                // Set Provider autentikasi kita
-                .authenticationProvider(authenticationProvider)
+                                // 3. TAMBAHKAN BLOK INI UNTUK MENANGANI ERROR 403
+                                .exceptionHandling(ex -> ex
+                                                .accessDeniedHandler(customAccessDeniedHandler))
 
-                // Pasang Filter JWT kita SEBELUM filter bawaan
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                                // Atur Session jadi STATELESS
+                                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-        return http.build();
-    }
+                                // Set Provider autentikasi kita
+                                .authenticationProvider(authenticationProvider)
+
+                                // Pasang Filter JWT kita SEBELUM filter bawaan
+                                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
+                return http.build();
+        }
 }
