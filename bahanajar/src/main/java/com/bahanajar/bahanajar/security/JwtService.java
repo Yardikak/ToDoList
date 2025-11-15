@@ -1,5 +1,6 @@
 package com.bahanajar.bahanajar.security;
 
+import java.nio.charset.StandardCharsets;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -74,7 +75,7 @@ public class JwtService { // class: service bean encapsulating JWT logic (single
     }
 
     private Key getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }
