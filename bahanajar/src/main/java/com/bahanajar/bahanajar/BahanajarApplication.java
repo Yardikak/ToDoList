@@ -2,6 +2,8 @@ package com.bahanajar.bahanajar;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 
@@ -13,6 +15,8 @@ import io.swagger.v3.oas.annotations.info.Info;
 		description = "Dokumentasi API untuk Aplikasi To Do List Belajar Spring Boot"
 	)
 )
+
+@EnableMethodSecurity
 public class BahanajarApplication {
 
 	public static void main(String[] args) {

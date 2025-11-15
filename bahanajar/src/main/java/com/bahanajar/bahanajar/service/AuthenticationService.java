@@ -26,7 +26,7 @@ public class AuthenticationService {
     public AuthResponse register(RegisterRequest request) {
         // 1. Buat object User baru
         User user = User.builder() // OOP: Builder Pattern
-                .role(Role.USER) // <-- Default Role
+                .role(Role.USER)
                 .email(request.email())
                 .name(request.name())
                 .password(passwordEncoder.encode(request.password()))
@@ -39,6 +39,20 @@ public class AuthenticationService {
         String jwtToken = jwtService.generateToken(user);
 
         // 4. Kembalikan token
+        return new AuthResponse(jwtToken);
+    }
+
+    // REGISTER (Admin)
+    public AuthResponse registerAdmin(RegisterRequest request) {
+        User user = User.builder()
+                .role(Role.ADMIN)
+                .email(request.email())
+                .name(request.name())
+                .password(passwordEncoder.encode(request.password()))
+                .build();
+
+        userRepository.save(user);
+        String jwtToken = jwtService.generateToken(user);
         return new AuthResponse(jwtToken);
     }
 

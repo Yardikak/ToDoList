@@ -4,7 +4,7 @@ import com.bahanajar.bahanajar.dto.AuthResponse;
 import com.bahanajar.bahanajar.dto.LoginRequest;
 import com.bahanajar.bahanajar.dto.RegisterRequest;
 import com.bahanajar.bahanajar.service.AuthenticationService;
-import jakarta.validation.Valid; // <-- Import untuk validasi
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthenticationController {
     private final AuthenticationService service;
+
+    @PostMapping("/register-admin")
+    public ResponseEntity<AuthResponse> registerAdmin(
+            @Valid @RequestBody RegisterRequest request) {
+        return ResponseEntity.ok(service.registerAdmin(request));
+    }
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(
